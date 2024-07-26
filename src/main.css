@@ -1,0 +1,32 @@
+:root, html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* min-height: 100vh;
+    height: 100%; */
+}
+
+#root {
+    min-height: 100vh;
+    height: auto;
+}
+
+.radix-themes {
+    --default-font-family: "GT America";
+}
+
+.w-full {
+    width: 100%;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
