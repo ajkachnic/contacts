@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { Link, useLocation } from "wouter";
 import {
   Button,
@@ -9,12 +10,11 @@ import {
   TextField,
 } from "@radix-ui/themes";
 
-import { ListResult, RecordModel } from "pocketbase";
+import { RecordModel } from "pocketbase";
 
-import { pb, useResource } from "../utils";
+import { pb } from "../utils";
 import { StaticContact, EditingContact } from "../components/contact";
-
-const getContacts = () => pb.collection("contacts").getList(1, 20);
+import { createEmpty } from "../lib/contact";
 
 export default function Index() {
   const [, navigate] = useLocation();
@@ -24,7 +24,16 @@ export default function Index() {
     }
   }, [navigate]);
 
-  const contacts = useResource(getContacts);
+  const [selected, setSelected] = useState<string | null>(null);
+  const { data, error, isLoading, mutate } = useSWR("contacts", (k: string) =>
+    pb.collection(k).getFullList()
+  );
+
+  const addContact = async () => {
+    const r = await createEmpty();
+    await mutate([...(data ?? []), r]);
+    setSelected(r.id);
+  };
 
   return (
     <Flex justify="center" minHeight="100vh" p="8">
@@ -32,30 +41,43 @@ export default function Index() {
         <Flex align="center" className="w-full" gap="2" mb="4">
           <Text weight="bold">contacts</Text>
           <TextField.Root
-            placeholder={`search ${
-              contacts.data?.items.length || ""
-            } contacts...`}
+            placeholder={`search ${data?.length || ""} contacts...`}
             variant="surface"
             style={{ flexGrow: 1 }}
           />
-          <Button variant="soft">add</Button>
+          <Button variant="soft" onClick={addContact} disabled={isLoading}>
+            add
+          </Button>
         </Flex>
-        {contacts.loading && <Text as="p">Loading...</Text>}
-        {contacts.error && <Text as="p">Error: {contacts.error.message}</Text>}
-        {contacts.data && <Contacts contacts={contacts.data} />}
+        {isLoading && <Text as="p">Loading...</Text>}
+        {error && <Text as="p">Error: {error.message}</Text>}
+        {data && (
+          <Contacts
+            contacts={data}
+            mutate={mutate}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        )}
       </Container>
     </Flex>
   );
 }
 
 function Contacts({
-  contacts: initial,
+  contacts,
+  mutate,
+  selected,
+  setSelected,
 }: {
-  contacts: ListResult<RecordModel>;
+  contacts: RecordModel[];
+  mutate: (data: RecordModel[]) => void;
+
+  selected: string | null;
+  setSelected: (id: string | null) => void;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
-  const [contacts, setContacts] = useState(initial.items);
-  console.log(selected);
+  const mutateContact = (i: number) => (contact: RecordModel) =>
+    mutate([...contacts.slice(0, i), contact, ...contacts.slice(i + 1)]);
 
   if (contacts.length === 0) {
     return (
@@ -77,13 +99,7 @@ function Contacts({
             key={contact.id}
             contact={contact}
             setSelected={setSelected}
-            setContact={(contact) =>
-              setContacts([
-                ...contacts.slice(0, i),
-                contact,
-                ...contacts.slice(i + 1),
-              ])
-            }
+            setContact={mutateContact(i)}
           />
         ) : (
           <StaticContact

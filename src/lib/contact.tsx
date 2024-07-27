@@ -40,8 +40,17 @@ const GENERATED_FILTER = [...singleProperties, ...multiProperties]
   .map(([column]) => `${column} ~ {:query}`)
   .join(" || ");
 
+const DEFAULT = Object.fromEntries([
+  ...singleProperties.map(([column]) => [column, ""]),
+  ...multiProperties.map(([column]) => [column, []]),
+]);
+
 export function search(query: string, limit: number = 20) {
   return pb.collection("contacts").getList(1, limit, {
     filter: pb.filter(GENERATED_FILTER, { query }),
   });
+}
+
+export function createEmpty() {
+  return pb.collection("contacts").create(DEFAULT);
 }
