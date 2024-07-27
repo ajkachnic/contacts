@@ -2,7 +2,7 @@ import PocketBase from "pocketbase";
 import * as v from "valibot";
 import { useEffect, useState } from "react";
 
-export const pb = new PocketBase("http://localhost:8090");
+export const pb = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 pb.autoCancellation(false);
 
 export function useResource<T>(fn: () => Promise<T>) {
@@ -58,6 +58,7 @@ export const contactSchema = v.object({
   notes: v.string(),
   website: v.string(),
 
+  meetings: v.array(v.string()),
   phone: v.array(v.string()),
   email: v.array(v.string()),
   // TODO: socials should be a map
