@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 AS base
+FROM docker.io/oven/bun:1 AS base
 WORKDIR /usr/src/app
 
 # install dependencies into temp directory
@@ -27,7 +27,7 @@ RUN bun run build
 
 # copy static files to nginx
 FROM base AS release
-FROM nginx:1.27-alpine
+FROM docker.io/nginx:1.27-alpine
 
 
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
