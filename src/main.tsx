@@ -9,7 +9,6 @@ import { Route, Switch } from "wouter";
 
 import Index from "./routes/index";
 import Login from "./routes/login";
-import Import from "./routes/import";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -20,9 +19,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </Route>
         <Route path="/login">
           <Login />
-        </Route>
-        <Route path="/import">
-          <Import />
         </Route>
       </Switch>
     </Theme>

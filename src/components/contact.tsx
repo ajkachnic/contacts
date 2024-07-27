@@ -78,7 +78,6 @@ export function EditingContact({
 }) {
   const { register, handleSubmit, formState } = useForm();
 
-  // TODO: use form library here, it's a mess
   const onSubmit = async (data: any) => {
     const record: Record<string, unknown> = {};
     for (const [field] of singleProperties) {

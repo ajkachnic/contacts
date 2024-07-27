@@ -1,10 +1,10 @@
 import PocketBase from "pocketbase";
-import * as v from "valibot";
 import { useEffect, useState } from "react";
 
 export const pb = new PocketBase(import.meta.env.VITE_POCKETBASE_URL);
 pb.autoCancellation(false);
 
+// TODO: use react-query or SWR
 export function useResource<T>(fn: () => Promise<T>) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,21 +49,6 @@ export function useSubscription<T>(collection: string) {
     loading,
   };
 }
-
-export const contactSchema = v.object({
-  id: v.string(),
-  name: v.string(),
-  place: v.string(),
-  work: v.string(),
-  notes: v.string(),
-  website: v.string(),
-
-  meetings: v.array(v.string()),
-  phone: v.array(v.string()),
-  email: v.array(v.string()),
-  // TODO: socials should be a map
-  social: v.array(v.string()),
-});
 
 export function formatPhoneNumber(
   phone: number | string,
