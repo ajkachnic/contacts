@@ -30,26 +30,6 @@ export function useResource<T>(fn: () => Promise<T>) {
   };
 }
 
-export function useSubscription<T>(collection: string) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    pb.collection(collection).subscribe("*", (data) => {
-      console.log(data);
-      setLoading(false);
-      setData(data);
-    });
-
-    return () => pb.collection(collection).unsubscribe("*");
-  }, [collection]);
-
-  return {
-    data,
-    loading,
-  };
-}
-
 export function formatPhoneNumber(
   phone: number | string,
   { prefix = "+" } = {}

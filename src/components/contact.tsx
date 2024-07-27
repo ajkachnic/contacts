@@ -26,7 +26,7 @@ export function StaticContact({
     <Card className="w-full relative">
       <Grid columns="2" className="w-full">
         <DataList.Root>
-          {singleProperties.map(([column, label, , , render]) => (
+          {singleProperties.map(({ column, label, render }) => (
             <DataList.Item key={column}>
               <DataList.Label minWidth="60px">{label}</DataList.Label>
               <DataList.Value>
@@ -37,7 +37,7 @@ export function StaticContact({
         </DataList.Root>
         <DataList.Root>
           <DataList.Root>
-            {multiProperties.map(([column, label, , , render]) => (
+            {multiProperties.map(({ column, label, render }) => (
               <DataList.Item key={column}>
                 <DataList.Label minWidth="60px">{label}</DataList.Label>
                 <DataList.Value>
@@ -80,11 +80,11 @@ export function EditingContact({
 
   const onSubmit = async (data: any) => {
     const record: Record<string, unknown> = {};
-    for (const [field] of singleProperties) {
-      record[field] = data[field];
+    for (const { column } of singleProperties) {
+      record[column] = data[column];
     }
-    for (const [field] of multiProperties) {
-      record[field] = data[field].split(",").map((p) => p.trim());
+    for (const { column } of multiProperties) {
+      record[column] = data[column].split(",").map((p: string) => p.trim());
     }
 
     const result = await pb.collection("contacts").update(contact.id, record);
@@ -98,48 +98,52 @@ export function EditingContact({
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid columns="2" className="w-full">
           <DataList.Root>
-            {singleProperties.map(([column, label, placeholder, multiline]) => (
-              <DataList.Item key={column}>
-                <DataList.Label minWidth="60px">{label}</DataList.Label>
-                <DataList.Value>
-                  {multiline ? (
-                    <TextArea
-                      placeholder={placeholder}
-                      defaultValue={contact[column]}
-                      {...register(column)}
-                    />
-                  ) : (
-                    <TextField.Root
-                      defaultValue={contact[column]}
-                      placeholder={placeholder}
-                      {...register(column)}
-                    />
-                  )}
-                </DataList.Value>
-              </DataList.Item>
-            ))}
+            {singleProperties.map(
+              ({ column, label, placeholder, multiline }) => (
+                <DataList.Item key={column}>
+                  <DataList.Label minWidth="60px">{label}</DataList.Label>
+                  <DataList.Value>
+                    {multiline ? (
+                      <TextArea
+                        placeholder={placeholder}
+                        defaultValue={contact[column]}
+                        {...register(column)}
+                      />
+                    ) : (
+                      <TextField.Root
+                        defaultValue={contact[column]}
+                        placeholder={placeholder}
+                        {...register(column)}
+                      />
+                    )}
+                  </DataList.Value>
+                </DataList.Item>
+              )
+            )}
           </DataList.Root>
           <DataList.Root>
-            {multiProperties.map(([column, label, placeholder, multiline]) => (
-              <DataList.Item key={column}>
-                <DataList.Label minWidth="60px">{label}</DataList.Label>
-                <DataList.Value>
-                  {multiline ? (
-                    <TextArea
-                      placeholder={placeholder}
-                      defaultValue={contact[column]}
-                      {...register(column)}
-                    />
-                  ) : (
-                    <TextField.Root
-                      placeholder={placeholder}
-                      defaultValue={contact[column]}
-                      {...register(column)}
-                    />
-                  )}
-                </DataList.Value>
-              </DataList.Item>
-            ))}
+            {multiProperties.map(
+              ({ column, label, placeholder, multiline }) => (
+                <DataList.Item key={column}>
+                  <DataList.Label minWidth="60px">{label}</DataList.Label>
+                  <DataList.Value>
+                    {multiline ? (
+                      <TextArea
+                        placeholder={placeholder}
+                        defaultValue={contact[column]}
+                        {...register(column)}
+                      />
+                    ) : (
+                      <TextField.Root
+                        placeholder={placeholder}
+                        defaultValue={contact[column]}
+                        {...register(column)}
+                      />
+                    )}
+                  </DataList.Value>
+                </DataList.Item>
+              )
+            )}
           </DataList.Root>
         </Grid>
         <Flex justify="end" gap="2">
